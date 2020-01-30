@@ -2,12 +2,13 @@ package com.asys1920.ordermanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-public class OrdermanagementApplication {
+@EnableConfigurationProperties
+public class OrderManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrdermanagementApplication.class, args);
+		SpringApplication.run(OrderManagementApplication.class, args);
 	}
-
 }

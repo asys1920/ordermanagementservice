@@ -1,0 +1,9 @@
+spring:
+  port: 8080
+
+
+ordermanagement:
+  services:
+    - user: ${USERSERVICE_URL:http:/localhost:8081/users}
+    - car: ${CARSERVICE_URL:http:/localhost:8082/cars}
+    - accounting: ${ACCOUNTINGSERVICE_URL:http:/localhost:8083/bills}
