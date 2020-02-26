@@ -1,20 +1,27 @@
 package com.asys1920.ordermanagement.adapter;
 
 import com.asys1920.dto.UserDTO;
-import com.asys1920.ordermanagement.config.RestTemplatesConfiguration;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.stereotype.Service;
+import com.asys1920.mapper.UserMapper;
 import com.asys1920.model.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-@Service
-public class UserServiceAdapter extends ServiceAdapter {
+@Component
+public class UserServiceAdapter {
+    @Value("http://localhost:8080/users/")
+    private String userServiceUrl;
+    final RestTemplate restTemplate;
 
-    UserServiceAdapter(RestTemplatesConfiguration restTemplatesConfiguration, RestTemplateBuilder restTemplateBuilder) {
-        super(restTemplatesConfiguration, restTemplateBuilder);
+    public UserServiceAdapter(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
     }
 
-    public User getUser() {
-        restTemplate.getForObject(restTemplatesConfiguration.getUserHost(), UserDTO.class);
-        return null;
+
+    public User getUser(Long userId) {
+        UserDTO userDTO = restTemplate
+                .getForObject(userServiceUrl + userId, UserDTO.class);
+        return UserMapper.INSTANCE.userDTOtoUser(userDTO);
     }
 }
