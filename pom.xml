@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>com.asys1920</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>dependencies</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
