@@ -7,6 +7,7 @@
         <artifactId>core</artifactId>
         <version>1.0.0</version>
     </parent>
+
     <name>orderservice</name>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>orderservice</artifactId>
@@ -15,30 +16,6 @@
 
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-data-rest</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>com.asys1920</groupId>
             <artifactId>dependencies</artifactId>
