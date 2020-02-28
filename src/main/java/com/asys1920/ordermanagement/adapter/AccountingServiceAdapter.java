@@ -19,7 +19,11 @@ public class AccountingServiceAdapter {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-
+    /**
+     * Saves a bill in the accounting service
+     * @param bill the bill that gets saved in the service
+     * @return the bill returned by the accounting service
+     */
     public Bill saveBill(Bill bill) {
         BillDTO billDTO = BillMapper.INSTANCE.billToBillDTO(bill);
         HttpEntity<BillDTO> request = new HttpEntity<>(billDTO);

@@ -19,6 +19,11 @@ public class CarServiceAdapter {
     }
 
 
+    /**
+     * Fetches a car from the car service
+     * @param carId the id to search for
+     * @return the car from the service
+     */
     public Car getCar(Long carId) {
         CarDTO carDTO = restTemplate
                 .getForObject(carServiceUrl + carId, CarDTO.class);

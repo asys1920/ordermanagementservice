@@ -106,6 +106,12 @@ public class OrderController {
         return ResponseEntity.ok().body(allOrderDTOs);
     }
 
+    @ApiOperation(value = "Get all existing orders for the specified car", response = OrderDTO.class,  responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully fetched orders"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @GetMapping(PATH+"/bycar/{carId}")
     public ResponseEntity<List<OrderDTO>> getAllOrdersByCar(@PathVariable long carId) {
         LOG.trace(String.format("GET %s%s initiated", PATH,"/bycar"));
@@ -116,7 +122,12 @@ public class OrderController {
         LOG.trace(String.format("GET %s%s completed", PATH,"/bycar"));
         return ResponseEntity.ok().body(allOrderDTOs);
     }
-
+    @ApiOperation(value = "Get all existing orders for the specified user", response = OrderDTO.class,  responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully fetched orders"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @GetMapping(PATH+"/byuser/{userId}")
     public ResponseEntity<List<OrderDTO>> getAllOrdersByUser(@PathVariable long userId) {
         LOG.trace(String.format("GET %s%s initiated", PATH,"/byuser"));

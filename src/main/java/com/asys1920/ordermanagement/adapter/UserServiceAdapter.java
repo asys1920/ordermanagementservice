@@ -18,7 +18,11 @@ public class UserServiceAdapter {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-
+    /**
+     * Fetches a user from the user service
+     * @param userId id of the user to be fetched
+     * @return the use object associated with the given id
+     */
     public User getUser(Long userId) {
         UserDTO userDTO = restTemplate
                 .getForObject(userServiceUrl + userId, UserDTO.class);
