@@ -29,8 +29,9 @@ public class CarServiceAdapter {
      */
     public Car getCar(Long carId) throws ServiceUnavailableException {
         try {
+            String temp = carServiceUrl + carId;
             CarDTO carDTO = restTemplate
-                    .getForObject(carServiceUrl + carId, CarDTO.class);
+                    .getForObject(temp, CarDTO.class);
             return CarMapper.INSTANCE.carDTOToCar(carDTO);
         } catch (Exception ex) {
             throw new ServiceUnavailableException("CarService is currently unavailable. Please try again later.");
