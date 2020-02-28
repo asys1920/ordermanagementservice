@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.ServiceUnavailableException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
@@ -39,7 +40,7 @@ public class OrderController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @PostMapping(PATH)
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws ValidationException, CarNotAvailableException, UserMayNotRentException, IllegalReservationException {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws ValidationException, CarNotAvailableException, UserMayNotRentException, IllegalReservationException, ServiceUnavailableException {
         LOG.trace(String.format("POST %s initiated", PATH));
         Set<ConstraintViolation<OrderDTO>> validate = Validation.buildDefaultValidatorFactory().getValidator().validate(orderDTO);
         if (!validate.isEmpty()) {
@@ -72,7 +73,7 @@ public class OrderController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @PatchMapping(PATH+"/{orderId}")
-    public ResponseEntity<OrderDTO> finishOrder(@PathVariable long orderId) throws OrderNotFoundException {
+    public ResponseEntity<OrderDTO> finishOrder(@PathVariable long orderId) throws OrderNotFoundException, ServiceUnavailableException {
         LOG.trace(String.format("PATCH %s initiated", PATH));
         return new ResponseEntity<>(OrderMapper.INSTANCE.orderToOrderDTO(orderService.finishOrder(orderId)), HttpStatus.OK);
     }

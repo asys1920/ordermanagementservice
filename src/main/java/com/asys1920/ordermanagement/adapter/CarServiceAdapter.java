@@ -8,6 +8,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.naming.ServiceUnavailableException;
+
 @Component
 public class CarServiceAdapter {
     @Value("${car.url}")
@@ -21,12 +23,17 @@ public class CarServiceAdapter {
 
     /**
      * Fetches a car from the car service
+     *
      * @param carId the id to search for
      * @return the car from the service
      */
-    public Car getCar(Long carId) {
-        CarDTO carDTO = restTemplate
-                .getForObject(carServiceUrl + carId, CarDTO.class);
-        return CarMapper.INSTANCE.carDTOToCar(carDTO);
+    public Car getCar(Long carId) throws ServiceUnavailableException {
+        try {
+            CarDTO carDTO = restTemplate
+                    .getForObject(carServiceUrl + carId, CarDTO.class);
+            return CarMapper.INSTANCE.carDTOToCar(carDTO);
+        } catch (Exception ex) {
+            throw new ServiceUnavailableException("UserService is currently unavailable. Please try again later.");
+        }
     }
 }

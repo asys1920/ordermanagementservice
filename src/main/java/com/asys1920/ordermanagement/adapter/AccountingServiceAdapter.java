@@ -9,6 +9,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.naming.ServiceUnavailableException;
+
 @Component
 public class AccountingServiceAdapter {
     @Value("${accounting.url}")
@@ -21,12 +23,17 @@ public class AccountingServiceAdapter {
 
     /**
      * Saves a bill in the accounting service
+     *
      * @param bill the bill that gets saved in the service
      * @return the bill returned by the accounting service
      */
-    public Bill saveBill(Bill bill) {
-        BillDTO billDTO = BillMapper.INSTANCE.billToBillDTO(bill);
-        HttpEntity<BillDTO> request = new HttpEntity<>(billDTO);
-        return BillMapper.INSTANCE.billDTOtoBill(restTemplate.postForObject(accountingServiceUrl, request, BillDTO.class));
+    public Bill saveBill(Bill bill) throws ServiceUnavailableException {
+        try {
+            BillDTO billDTO = BillMapper.INSTANCE.billToBillDTO(bill);
+            HttpEntity<BillDTO> request = new HttpEntity<>(billDTO);
+            return BillMapper.INSTANCE.billDTOtoBill(restTemplate.postForObject(accountingServiceUrl, request, BillDTO.class));
+        } catch (Exception ex) {
+            throw new ServiceUnavailableException("UserService is currently unavailable. Please try again later.");
+        }
     }
 }

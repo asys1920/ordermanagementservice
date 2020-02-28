@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.naming.ServiceUnavailableException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -40,7 +41,7 @@ public class OrderService {
      * @param userId the user to be checked
      * @return if the user is not active
      */
-    public boolean userIsNotActive(Long userId) {
+    public boolean userIsNotActive(Long userId) throws ServiceUnavailableException {
         LOG.trace(String.format("SERVICE %s %d initiated", "userIsNotActive", userId));
         User user = userServiceAdapter.getUser(userId);
         return !user.isActive();
@@ -51,7 +52,7 @@ public class OrderService {
      * @param userId the user to be checked
      * @return if the user is banned
      */
-    public boolean userIsBanned(Long userId) {
+    public boolean userIsBanned(Long userId) throws ServiceUnavailableException {
         LOG.trace(String.format("SERVICE %s %d initiated", "userIsBanned", userId));
         return userServiceAdapter.getUser(userId).isBanned();
     }
@@ -61,7 +62,7 @@ public class OrderService {
      * @param carId the car to be checked
      * @return if the car is end of life
      */
-    public boolean carIsEol(Long carId) {
+    public boolean carIsEol(Long carId) throws ServiceUnavailableException {
         LOG.trace(String.format("SERVICE %s %d initiated", "carIsEol", carId));
         Car car = carServiceAdapter.getCar(carId);
         return car.isEol();
@@ -91,7 +92,7 @@ public class OrderService {
      * @throws CarNotAvailableException gets thrown if the car is either in use or eol in the timeframe
      * @throws UserMayNotRentException gets thrown if the user is either banned or not active
      */
-    public Order createOrder(Order order) throws CarNotAvailableException, UserMayNotRentException {
+    public Order createOrder(Order order) throws CarNotAvailableException, UserMayNotRentException, ServiceUnavailableException {
         // Set start date on server to prevent fraud
         LOG.trace(String.format("SERVICE %s initiated", "createOrder"));
         if (carIsEol(order.getCarId())) {
@@ -115,7 +116,7 @@ public class OrderService {
      * @throws CarNotAvailableException gets thrown if the car is either in use or eol in the timeframe
      * @throws UserMayNotRentException gets thrown if the user is either banned or not active
      */
-    public Order reserveOrder(Order order) throws UserMayNotRentException, CarNotAvailableException {
+    public Order reserveOrder(Order order) throws UserMayNotRentException, CarNotAvailableException, ServiceUnavailableException {
         LOG.trace(String.format("SERVICE %s initiated", "reverseOrder"));
         if (userIsNotActive(order.getUserId()) || userIsBanned(order.getUserId())) {
             throw new UserMayNotRentException("The requested user is inactive or banned");
@@ -136,7 +137,7 @@ public class OrderService {
      * @return the completed order
      * @throws OrderNotFoundException gets thrown if the order was not found
      */
-    public Order finishOrder(Long orderId) throws OrderNotFoundException {
+    public Order finishOrder(Long orderId) throws OrderNotFoundException, ServiceUnavailableException {
         LOG.trace(String.format("SERVICE %s %d initiated", "finishOrder", orderId));
         if (!orderRepository.existsById(orderId)) {
             throw new OrderNotFoundException("The requested order was not found");
