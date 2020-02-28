@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class CarServiceAdapter {
-    @Value("http://localhost:9091/cars/")
+    @Value("http://localhost:8086/cars/")
     private String carServiceUrl;
     final RestTemplate restTemplate;
 

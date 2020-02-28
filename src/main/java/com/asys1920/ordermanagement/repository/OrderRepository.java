@@ -9,4 +9,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByCarIdAndEndDateNotNullAndEndDateIsBefore(Long carId, Instant now);
     List<Order> findAllByCarId(Long carId);
+    List<Order> findAllByUserId(Long userId);
 }

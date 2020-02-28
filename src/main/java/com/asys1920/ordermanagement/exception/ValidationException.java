@@ -11,4 +11,7 @@ public class ValidationException extends Exception {
                 .collect(Collectors.joining(System.lineSeparator())));
     }
 
+    public ValidationException(String message) {
+        super(message);
+    }
 }

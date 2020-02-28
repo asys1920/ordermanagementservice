@@ -3,7 +3,7 @@ package com.asys1920.ordermanagement.controller;
 import com.asys1920.dto.OrderDTO;
 import com.asys1920.mapper.OrderMapper;
 import com.asys1920.model.Order;
-import com.asys1920.ordermanagement.exception.ValidationException;
+import com.asys1920.ordermanagement.exception.*;
 import com.asys1920.ordermanagement.service.OrderService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,43 +15,49 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
 public class OrderController {
+    private static final String PATH = "/orders";
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
     
-    @ApiOperation(value = "Create a new order", response = OrderDTO.class)
+    @ApiOperation(value = "Create a new order or reservation", response = OrderDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created order"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    @PostMapping("/orders")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws ValidationException {
+    @PostMapping(PATH)
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws ValidationException, CarNotAvailableException, UserMayNotRentException, IllegalReservationException {
         Set<ConstraintViolation<OrderDTO>> validate = Validation.buildDefaultValidatorFactory().getValidator().validate(orderDTO);
         if (!validate.isEmpty()) {
             throw new ValidationException(validate);
         }
         Order order = OrderMapper.INSTANCE.orderDTOToOrder(orderDTO);
 
-        if(orderService.carIsEol(order.getCarId())) {
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        if(order.getStartDate() != null && order.getStartDate().isAfter(Instant.now())) {
+            // If startDate already exists and is in future, it's a reserve request
+            if(order.getEndDate() != null && order.getEndDate().isAfter(order.getStartDate())) {
+                // If order has an endDate after startDate
+                order = orderService.reserveOrder(order);
+            }
+            else {
+                throw new IllegalReservationException("Requested reservation has no end date");
+            }
         }
-        if(!orderService.userIsActive(order.getUserId()) || orderService.userIsBanned(order.getUserId())) {
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        else {
+            // If startDate does not exist, it's a normal order starting exactly now
+            order = orderService.createOrder(order);
         }
-        if(orderService.carIsInUse(order.getCarId())) {
-            return new ResponseEntity<>(HttpStatus.IM_USED);
-        }
-        // Update order by saving -> gets an ID assigned by the database
-        order = orderService.createOrder(order);
+
         return new ResponseEntity<>(OrderMapper.INSTANCE.orderToOrderDTO(order), HttpStatus.CREATED);
     }
     
@@ -61,8 +67,8 @@ public class OrderController {
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    @PatchMapping("/orders/{orderId}")
-    public ResponseEntity<OrderDTO> finishOrder(@PathVariable long orderId) {
+    @PatchMapping(PATH+"/{orderId}")
+    public ResponseEntity<OrderDTO> finishOrder(@PathVariable long orderId) throws OrderNotFoundException {
         return new ResponseEntity<>(OrderMapper.INSTANCE.orderToOrderDTO(orderService.finishOrder(orderId)), HttpStatus.OK);
     }
     
@@ -72,7 +78,7 @@ public class OrderController {
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    @GetMapping("/orders/{orderId}")
+    @GetMapping(PATH+"/{orderId}")
     public ResponseEntity<OrderDTO> getOrder(@PathVariable @NotNull long orderId) {
         return new ResponseEntity<>(OrderMapper.INSTANCE.orderToOrderDTO(orderService.getOrder(orderId)), HttpStatus.OK);
     }
@@ -83,9 +89,27 @@ public class OrderController {
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    @GetMapping("/orders")
+    @GetMapping(PATH)
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
         List<Order> allOrders = orderService.getAllOrders();
+        List<OrderDTO> allOrderDTOs = allOrders.stream()
+                .map(OrderMapper.INSTANCE::orderToOrderDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(allOrderDTOs);
+    }
+
+    @GetMapping(PATH+"/bycar/{carId}")
+    public ResponseEntity<List<OrderDTO>> getAllOrdersByCar(@PathVariable long carId) {
+        List<Order> allOrders = orderService.getAllOrdersByCar(carId);
+        List<OrderDTO> allOrderDTOs = allOrders.stream()
+                .map(OrderMapper.INSTANCE::orderToOrderDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(allOrderDTOs);
+    }
+
+    @GetMapping(PATH+"/byuser/{userId}")
+    public ResponseEntity<List<OrderDTO>> getAllOrdersByUser(@PathVariable long userId) {
+        List<Order> allOrders = orderService.getAllOrdersByUser(userId);
         List<OrderDTO> allOrderDTOs = allOrders.stream()
                 .map(OrderMapper.INSTANCE::orderToOrderDTO)
                 .collect(Collectors.toList());
