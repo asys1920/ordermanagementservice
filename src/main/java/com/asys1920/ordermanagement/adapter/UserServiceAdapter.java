@@ -8,6 +8,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.naming.ServiceUnavailableException;
+
 @Component
 public class UserServiceAdapter {
     @Value("${user.url}")
@@ -23,9 +25,13 @@ public class UserServiceAdapter {
      * @param userId id of the user to be fetched
      * @return the use object associated with the given id
      */
-    public User getUser(Long userId) {
-        UserDTO userDTO = restTemplate
-                .getForObject(userServiceUrl + userId, UserDTO.class);
-        return UserMapper.INSTANCE.userDTOtoUser(userDTO);
+    public User getUser(Long userId) throws ServiceUnavailableException {
+        try {
+            UserDTO userDTO = restTemplate
+                    .getForObject(userServiceUrl + userId, UserDTO.class);
+            return UserMapper.INSTANCE.userDTOtoUser(userDTO);
+        } catch (Exception ex) {
+            throw new ServiceUnavailableException("UserService is currently unavailable. Please try again later.");
+        }
     }
 }
