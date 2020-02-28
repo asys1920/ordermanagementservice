@@ -35,8 +35,8 @@ find the Swagger Documentation at `http://<host>:<port>/swagger-ui.html`
 Method | Endpoint | Parameters | Request Body | Description
 --- | --- | ---  | --- | ---
 GET | /orders | N/A | N/A | Gets all orders
-GET | /orders | /bycar/{id} | N/A | Gets all orders containing the car specified by ID
-GET | /orders | /byuser/{id} | N/A | Gets all orders containing the user specified by ID
+GET | /orders/bycar | /{id} | N/A | Gets all orders containing the car specified by ID
+GET | /orders/byuser | /{id} | N/A | Gets all orders containing the user specified by ID
 GET | /orders | /{id} | N/A | Gets the order with the specified ID
 POST | /orders | N/A | Order in JSON Format | Creates an Order based on the Request Body
 DELETE | /orders | /{id} | N/A | Deletes the car with the specified ID
