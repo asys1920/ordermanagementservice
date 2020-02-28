@@ -33,7 +33,7 @@ public class CarServiceAdapter {
                     .getForObject(carServiceUrl + carId, CarDTO.class);
             return CarMapper.INSTANCE.carDTOToCar(carDTO);
         } catch (Exception ex) {
-            throw new ServiceUnavailableException("UserService is currently unavailable. Please try again later.");
+            throw new ServiceUnavailableException("CarService is currently unavailable. Please try again later.");
         }
     }
 }

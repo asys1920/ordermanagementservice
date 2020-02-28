@@ -33,7 +33,7 @@ public class AccountingServiceAdapter {
             HttpEntity<BillDTO> request = new HttpEntity<>(billDTO);
             return BillMapper.INSTANCE.billDTOtoBill(restTemplate.postForObject(accountingServiceUrl, request, BillDTO.class));
         } catch (Exception ex) {
-            throw new ServiceUnavailableException("UserService is currently unavailable. Please try again later.");
+            throw new ServiceUnavailableException("AccountingService is currently unavailable. Please try again later.");
         }
     }
 }
