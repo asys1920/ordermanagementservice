@@ -5,7 +5,6 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Requirements](#requirements)
-- [Quick Start / Setup](#quick-start--setup)
 - [API](#api)
 
 ## Description
