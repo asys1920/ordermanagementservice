@@ -5,6 +5,7 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Requirements](#requirements)
+- [Configuration](#configuration)
 - [API](#api)
 
 ## Description
@@ -27,6 +28,21 @@ If an order with a start and end date in the future is created, it will count as
 
 ## Requirements
 A JDK with at least Java Version 11.
+
+## Configuration
+You can set the Port of the microservice using the `ORDER_PORT` environment variable.
+The default Port used by the application is `8081`. To set the Address the Microservice
+listens on you can use the `ORDER_ADDRESS` environment variable, its default value is
+`localhost`.
+
+Furthermore, you can set the Addresses of the other microservices using the environment
+variables listed below:
+
+Environment Variable | Default Value
+--- | --- 
+`BILL_URL` | `http://localhost:8085/`
+`CAR_URL` | `http://localhost:8083/` 
+`USERS_URL` | `http://localhost:8084/` 
 
 ## API
 To see a full documentation view the swagger documentation while running the microservice. You can
