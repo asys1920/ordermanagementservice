@@ -42,7 +42,7 @@ Environment Variable | Default Value
 --- | --- 
 `BILL_URL` | `http://localhost:8085/`
 `CAR_URL` | `http://localhost:8083/` 
-`USERS_URL` | `http://localhost:8084/` 
+`USER_URL` | `http://localhost:8084/` 
 
 ## API
 To see a full documentation view the swagger documentation while running the microservice. You can
